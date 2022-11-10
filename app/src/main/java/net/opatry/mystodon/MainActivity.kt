@@ -33,6 +33,22 @@ class MainActivity : AppCompatActivity() {
 
         if (accountRepository.code.isNullOrEmpty()) {
             proceedWithAuthenticationFlow()
+        } else {
+            // TODO better error management an app clientId/clientSecret state management
+            val app = checkNotNull(mastodonInstance.app)
+            lifecycleScope.launch(Dispatchers.Main) {
+                withContext(Dispatchers.IO) {
+                    // TODO do that only once + HTTP Client interceptor
+                    val token = mastodonApi.getToken(
+                        grantType = "authorization_code",
+                        clientId = app.clientId,
+                        clientSecret = app.clientSecret,
+                        redirectUri = redirectUri,
+                        scope = scope,
+                        code = accountRepository.code
+                    )
+                }
+            }
         }
     }
 

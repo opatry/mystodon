@@ -65,6 +65,29 @@ sealed class Entity {
         @SerializedName("client_secret")
         val clientSecret: String,
     )
+
+    data class Token(
+        /**
+         * An OAuth token to be used for authorization.
+         */
+        @SerializedName("access_token")
+        val accessToken: String,
+        /**
+         * The OAuth token type. Mastodon uses Bearer tokens.
+         */
+        @SerializedName("token_type")
+        val tokenType: String,
+        /**
+         * The OAuth scopes granted by this token, space-separated.
+         */
+        @SerializedName("scope")
+        val scope: String,
+        /**
+         * When the token was generated. (UNIX Timestamp)
+         */
+        @SerializedName("created_at")
+        val createdAt: Long,
+    )
 }
 
 fun mastodonAuthorizeUri(
@@ -105,6 +128,32 @@ interface MastodonApi {
         @Field("scopes") scopes: String = "read",
         @Field("website") website: String? = null
     ): Entity.Application
+
+    /**
+     * Returns an access token, to be used during API calls that are not public.
+     * @param grantType Set equal to `authorization_code` if code is provided in order to gain user-level access.
+     * Otherwise, set equal to `client_credentials` to obtain app-level access only.
+     * @param clientId Client ID, obtained during app registration
+     * @param clientSecret Client secret, obtained during app registration
+     * @param redirectUri Set a URI to redirect the user to. If this parameter is set to `urn:ietf:wg:oauth:2.0:oob`
+     * then the token will be shown instead. Must match one of the redirect URIs declared during app registration.
+     * @param scope List of requested OAuth scopes, separated by spaces. Must be a subset of scopes declared during
+     * app registration. If not provided, defaults to `read`.
+     * @param code A user authorization code, obtained via `/oauth/authorize`
+     * @return Returns an access token, to be used during API calls that are not public.
+     *
+     * See https://docs.joinmastodon.org/methods/apps/oauth/
+     */
+    @FormUrlEncoded
+    @POST("oauth/token")
+    suspend fun getToken(
+        @Field("grant_type") grantType: String,
+        @Field("client_id") clientId: String,
+        @Field("client_secret") clientSecret: String,
+        @Field("redirect_uri") redirectUri: String,
+        @Field("scope") scope: String = "read",
+        @Field("code") code: String? = null
+    ): Entity.Token
 
     /**
      * Confirm that the app's OAuth2 credentials work.
