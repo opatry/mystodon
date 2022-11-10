@@ -2,15 +2,21 @@ package net.opatry.mystodon
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.opatry.mystodon.api.mastodonAuthorizeUri
 import net.opatry.mystodon.di.AccountRepositoryProvider
 import net.opatry.mystodon.di.MastodonApiProvider
 import net.opatry.mystodon.di.MastodonInstanceProvider
 
 private const val appClientName = "mystodon"
+
+/**
+ * see AndroidManifest `<intent-filter>` for [AuthCallbackActivity]
+ */
 private const val redirectUri = "mystodon://auth-callback"
 private const val scope = "read write follow push"
 private const val website = "https://mystodon.opatry.net"
@@ -43,6 +49,15 @@ class MainActivity : AppCompatActivity() {
             }
 
             mastodonInstance.app = app
+
+            CustomTabsIntent.Builder()
+                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+                .setShowTitle(true)
+                .build()
+                .launchUrl(
+                    this@MainActivity,
+                    mastodonAuthorizeUri(mastodonInstance.authority, app.clientId, redirectUri, scope)
+                )
         }
     }
 }

@@ -20,6 +20,7 @@
 
 package net.opatry.mystodon.api
 
+import android.net.Uri
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -65,6 +66,21 @@ sealed class Entity {
         val clientSecret: String,
     )
 }
+
+fun mastodonAuthorizeUri(
+    instanceAuthority: String,
+    clientId: String,
+    redirectUri: String,
+    scope: String
+): Uri = Uri.Builder()
+    .scheme("https")
+    .authority(instanceAuthority)
+    .path("/oauth/authorize")
+    .appendQueryParameter("response_type", "code")
+    .appendQueryParameter("client_id", clientId)
+    .appendQueryParameter("redirect_uri", redirectUri)
+    .appendQueryParameter("scope", scope)
+    .build()
 
 interface MastodonApi {
 
