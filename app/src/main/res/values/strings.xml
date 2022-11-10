@@ -2,4 +2,8 @@
     <string name="app_name">mystodon</string>
 
     <string name="auth_callback_error">Authentication error</string>
+
+    <string name="profile_username">\@%s</string>
+    <string name="profile_following_count">↑ %d</string>
+    <string name="profile_followers_count">↓ %d</string>
 </resources>

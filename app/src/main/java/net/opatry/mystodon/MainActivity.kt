@@ -4,10 +4,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.lifecycleScope
+import coil.load
+import coil.transform.CircleCropTransformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.opatry.mystodon.api.mastodonAuthorizeUri
+import net.opatry.mystodon.databinding.MainActivityBinding
 import net.opatry.mystodon.di.AccountRepositoryProvider
 import net.opatry.mystodon.di.MastodonApiProvider
 import net.opatry.mystodon.di.MastodonInstanceProvider
@@ -22,6 +25,7 @@ private const val scope = "read write follow push"
 private const val website = "https://mystodon.opatry.net"
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: MainActivityBinding
 
     // TODO Hilt DI instead of "manual DI"
     private val accountRepository by lazy { (application as AccountRepositoryProvider).accountRepository }
@@ -34,6 +38,9 @@ class MainActivity : AppCompatActivity() {
         if (accountRepository.code.isNullOrEmpty()) {
             proceedWithAuthenticationFlow()
         } else {
+            binding = MainActivityBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+
             // TODO better error management an app clientId/clientSecret state management
             val app = checkNotNull(mastodonInstance.app)
             lifecycleScope.launch(Dispatchers.Main) {
@@ -49,6 +56,18 @@ class MainActivity : AppCompatActivity() {
                     )
 
                     mastodonApi.getAccount("Bearer ${token.accessToken}")
+                }
+
+                with(binding) {
+                    // TODO reuse account.displayName and replace emojis key in string with spannable image pointing to URL (can be animated or not)
+                    profileUsername.text = getString(R.string.profile_username, account.username)
+                    profileFollowingCount.text = getString(R.string.profile_following_count, account.followingCount)
+                    profileFollowersCount.text = getString(R.string.profile_followers_count, account.followersCount)
+                    profileAvatar.load(account.avatar) {
+                        crossfade(true)
+                        placeholder(R.drawable.ic_baseline_account_circle_24)
+                        transformations(CircleCropTransformation())
+                    }
                 }
             }
         }
