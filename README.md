@@ -3,7 +3,7 @@
 ## Project description
 
 This project is absolutely not meant to be a real product of any kind.
-It's a case study app aiming at fetching Mastodon REST API on Android.
+It's a case study app aiming at fetching [Mastodon REST API](https://docs.joinmastodon.org/methods/apps/) on Android.
 
 ## 3rd party libraries
 
