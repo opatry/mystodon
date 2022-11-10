@@ -88,6 +88,238 @@ sealed class Entity {
         @SerializedName("created_at")
         val createdAt: Long,
     )
+
+    data class Emoji(
+        // Required attributes
+
+        /**
+         * The name of the custom emoji.
+         */
+        @SerializedName("shortcode")
+        val shortcode: String,
+        /**
+         * A link to the custom emoji. (URL)
+         */
+        @SerializedName("url")
+        val url: String,
+        /**
+         * A link to a static copy of the custom emoji. (URL)
+         */
+        @SerializedName("static_url")
+        val staticUrl: String,
+        /**
+         * Whether this Emoji should be visible in the picker or unlisted.
+         */
+        @SerializedName("visible_in_picker")
+        val visibleInPicker: Boolean,
+
+        // Optional attributes
+
+        /**
+         * Used for sorting custom emoji in the picker.
+         */
+        @SerializedName("category")
+        val category: String,
+    )
+
+    data class Field(
+        // Required attributes
+
+        /**
+         * The key of a given field's key-value pair.
+         */
+        @SerializedName("name")
+        val name: String,
+        /**
+         * The value associated with the `name` key. (HTML)
+         */
+        @SerializedName("value")
+        val value: String,
+
+        // Optional attributes
+
+        /**
+         * Timestamp of when the server verified a URL value for a rel="me” link. (ISO 8601 Datetime) if `value` is a verified URL. Otherwise, null
+         */
+        @SerializedName("verified_at")
+        val verifiedAt: String?,
+    )
+
+    data class Source(
+        // Base attributes
+
+        /**
+         * Profile bio.
+         */
+        @SerializedName("note")
+        val note: String,
+        /**
+         * Metadata about the account.
+         */
+        @SerializedName("fields")
+        val fields: List<Field>,
+
+        // Nullable attributes
+
+        /**
+         * The default post privacy to be used for new statuses. (Enumerable, oneOf)
+         * `public` = Public post
+         * `unlisted` = Unlisted post
+         * `private` = Followers-only post
+         * `direct` = Direct post
+         */
+        @SerializedName("privacy")
+        val privacy: String?,
+        /**
+         * Whether new statuses should be marked sensitive by default.
+         */
+        @SerializedName("sensitive")
+        val sensitive: Boolean?,
+        /**
+         * The default posting language for new statuses. (ISO 639-1 language two-letter code)
+         */
+        @SerializedName("language")
+        val language: String?,
+        /**
+         * The number of pending follow requests.
+         */
+        @SerializedName("follow_requests_count")
+        val followRequestsCount: Long?,
+    )
+
+    data class Account(
+        // Base attributes
+
+        /**
+         * The account id `header`. (cast from an integer, but not guaranteed to be a number)
+         */
+        @SerializedName("id")
+        val id: String,
+        /**
+         * The username of the account, not including domain.
+         */
+        @SerializedName("username")
+        val username: String,
+        /**
+         * The Webfinger account URI. Equal to `username` for local users, or `username@domain` for remote users.
+         */
+        @SerializedName("acct")
+        val acct: String,
+        /**
+         * The location of the user's profile page. (URL)
+         */
+        @SerializedName("url")
+        val url: String,
+
+        // Display attributes
+
+        /**
+         * The profile's display name.
+         */
+        @SerializedName("display_name")
+        val displayName: String,
+        /**
+         * The profile's bio / description.
+         */
+        @SerializedName("note")
+        val note: String,
+        /**
+         * An image icon that is shown next to statuses and in the profile. (URL)
+         */
+        @SerializedName("avatar")
+        val avatar: String,
+        /**
+         * A static version of the avatar. Equal to `avatar` if its value is a static image; different if `avatar` is an animated GIF. (URL)
+         */
+        @SerializedName("avatar_static")
+        val avatarStatic: String,
+        /**
+         * An image banner that is shown above the profile and in profile cards. (URL)
+         */
+        @SerializedName("header")
+        val header: String,
+        /**
+         * A static version of the header. Equal to `header` if its value is a static image; different if `header` is an animated GIF. (URL)
+         */
+        @SerializedName("header_static")
+        val headerStatic: String,
+        /**
+         * Whether the account manually approves follow requests.
+         */
+        @SerializedName("locked")
+        val locked: Boolean,
+        /**
+         * Custom emoji entities to be used when rendering the profile. If none, an empty array will be returned.
+         */
+        @SerializedName("emojis")
+        val emojis: List<Emoji>,
+        /**
+         * Whether the account has opted into discovery features such as the profile directory.
+         */
+        @SerializedName("discoverable")
+        val discoverable: Boolean,
+
+        // Statistical attributes
+
+        /**
+         * When the account was created. (ISO 8601 Datetime)
+         */
+        @SerializedName("created_at")
+        val createdAt: String,
+        /**
+         * When the most recent status was posted. (ISO 8601 Datetime)
+         */
+        @SerializedName("last_status_at")
+        val lastStatusAt: String,
+        /**
+         * How many statuses are attached to this account.
+         */
+        @SerializedName("statuses_count")
+        val statusesCount: Long,
+        /**
+         * The reported follows of this profile.
+         */
+        @SerializedName("followers_count")
+        val followersCount: Long,
+        /**
+         * The reported followers of this profile.
+         */
+        @SerializedName("following_count")
+        val followingCount: Long,
+
+        // Optional attributes
+
+        /**
+         * Indicates that the profile is currently inactive and that its user has moved to a new account.
+         */
+        @SerializedName("moved")
+        val moved: Account?,
+        /**
+         * Additional metadata attached to a profile as name-value pairs.
+         */
+        @SerializedName("fields")
+        val fields: List<Field>?,
+        /**
+         * A presentational flag. Indicates that the account may perform automated actions, may not be monitored, or identifies as a robot.
+         */
+        @SerializedName("bot")
+        val bot: Boolean?,
+        /**
+         * An extra entity to be used with API methods to verify credentials and update credentials.
+         */
+        @SerializedName("source")
+        val source: Source,
+        /**
+         * An extra entity returned when an account is suspended.
+         */
+        @SerializedName("suspended")
+        val suspended: Boolean?,
+        /**
+         * When a timed mute will expire, if applicable. (ISO 8601 Datetime)
+         */
+        @SerializedName("mute_expires_at")
+        val muteExpiresAt: String,
+    )
 }
 
 fun mastodonAuthorizeUri(
@@ -165,5 +397,11 @@ interface MastodonApi {
      */
     @GET("api/v1/apps/verify_credentials")
     suspend fun verifyCredentials(@Header("Authorization") bearerToken: String): Entity.Application
+
+    /**
+     * @return the user's own [Entity.Account] with Source
+     */
+    @GET("api/v1/accounts/verify_credentials")
+    suspend fun getAccount(@Header("Authorization") bearerToken: String): Entity.Account
 
 }
