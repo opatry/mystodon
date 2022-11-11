@@ -18,10 +18,40 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents a profile field as a name-value pair with optional verification.
+ */
+data class Field(
+
+    // region Required attributes
+
+    /**
+     * The key of a given field's key-value pair.
+     */
+    @SerializedName("name")
+    val name: String,
+
+    /**
+     * The value associated with the [name] key.
+     * (HTML)
+     */
+    @SerializedName("value")
+    val value: String,
+
+    // endregion
+
+    // region Optional attributes
+
+    /**
+     * Timestamp of when the server verified a URL value for a `rel="me"` link.
+     * (ISO 8601 Datetime) if [value] is a verified URL. Otherwise, `null`
+     */
+    @SerializedName("verified_at")
+    val verifiedAt: String? = null,
+
+    // endregion
+)

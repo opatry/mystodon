@@ -20,8 +20,23 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Emoji
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val emojisData = listOf(
+    EntityTestParam.build(
+        """{
+          "shortcode": "blobaww",
+          "url": "https://files.mastodon.social/custom_emojis/images/000/011/739/original/blobaww.png",
+          "static_url": "https://files.mastodon.social/custom_emojis/images/000/011/739/static/blobaww.png",
+          "visible_in_picker": true,
+          "category": "Blobs"
+        }""".trimIndent(),
+        Emoji(
+            shortCode = "blobaww",
+            url = "https://files.mastodon.social/custom_emojis/images/000/011/739/original/blobaww.png",
+            staticUrl = "https://files.mastodon.social/custom_emojis/images/000/011/739/static/blobaww.png",
+            isVisibleInPicker = true,
+            category = "Blobs",
+        ),
+    ),
+)

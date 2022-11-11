@@ -20,8 +20,20 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.List
+import net.opatry.mystodon.api.entity.ReplyPolicy
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val listsData = listOf(
+    EntityTestParam.build(
+        """{
+          "id": "12249",
+          "title": "Friends",
+          "replies_policy": "list"
+        }""".trimIndent(),
+        List(
+            id = "12249",
+            title = "Friends",
+            repliesPolicy = ReplyPolicy.List
+        ),
+    ),
+)

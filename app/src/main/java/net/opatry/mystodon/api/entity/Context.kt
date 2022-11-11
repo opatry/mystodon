@@ -18,10 +18,29 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
+import kotlin.collections.List
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents the tree around a given status. Used for reconstructing threads of statuses.
+ */
+data class Context(
+
+    // region Required attributes
+
+    /**
+     * Parents in the thread.
+     */
+    @SerializedName("ancestors")
+    val ancestors: List<Status>,
+
+    /**
+     * Children in the thread.
+     */
+    @SerializedName("descendants")
+    val descendants: List<Status>,
+
+    // endregion
+)

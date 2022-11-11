@@ -20,8 +20,21 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Activity
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val activitiesData = listOf(
+    EntityTestParam.build(
+        """{
+          "week": "1574640000",
+          "statuses": "37125",
+          "logins": "14239",
+          "registrations": "542"
+        }""".trimIndent(),
+        Activity(
+            week = "1574640000",
+            statusesCount = 37125,
+            loginsCount = 14239,
+            registrationsCount = 542,
+        ),
+    ),
+)

@@ -27,6 +27,8 @@ import net.opatry.mystodon.databinding.AuthCallbackActivityBinding
 import net.opatry.mystodon.di.AccountRepositoryProvider
 
 class AuthCallbackActivity : AppCompatActivity() {
+    private val accountRepository by lazy { (application as AccountRepositoryProvider).accountRepository }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,7 +43,7 @@ class AuthCallbackActivity : AppCompatActivity() {
         } else {
             val code = data.getQueryParameter("code")
             if (code != null) {
-                (application as AccountRepositoryProvider).accountRepository.code = code
+                accountRepository.code = code
                 finish()
                 val intent = Intent(this, MainActivity::class.java).apply {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

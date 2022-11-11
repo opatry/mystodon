@@ -20,8 +20,19 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.History
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val historiesData = listOf(
+    EntityTestParam.build(
+        """{
+          "day": "1574553600",
+          "uses": "200",
+          "accounts": "31"
+        }""".trimIndent(),
+        History(
+            day = "1574553600",
+            usesCount = 200,
+            accountsCount = 31,
+        ),
+    ),
+)

@@ -18,10 +18,44 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
+/**
+ * Represents an OAuth token used for authenticating with the API and performing actions.
+ */
+data class Token(
+
+    // region Attributes
+
+    /**
+     * An OAuth token to be used for authorization.
+     */
+    @SerializedName("access_token")
+    val accessToken: String,
+
+    /**
+     * The OAuth token type. Mastodon uses `Bearer` tokens.
+     */
+    @SerializedName("token_type")
+    val tokenType: String,
+
+    /**
+     * The OAuth scopes granted by this token, space-separated.
+     */
+    @SerializedName("scope")
+    val scope: String,
+
+    /**
+     * When the token was generated.
+     * (UNIX Timestamp)
+     */
+    @SerializedName("created_at")
+    val createdAt: Long,
+
+    // endregion
+) {
+    val authorization: String
+        get() = "$tokenType $accessToken"
 }

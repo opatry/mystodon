@@ -41,29 +41,33 @@ class MainActivity : AppCompatActivity() {
             binding = MainActivityBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            // TODO better error management an app clientId/clientSecret state management
-            val app = checkNotNull(mastodonInstance.app)
+            // TODO better error management on app clientId/clientSecret state management
+            val app = checkNotNull(mastodonInstance.app) { "Application is not initialized as expected." }
+            val (clientId, clientSecret) = checkNotNull(app.clientId) { "Application does not have expected clientId." } to
+                    checkNotNull(app.clientSecret) { "Application does not have expected clientSecret." }
             lifecycleScope.launch(Dispatchers.Main) {
                 val account = withContext(Dispatchers.IO) {
                     // TODO do that only once + HTTP Client interceptor
                     val token = mastodonApi.getToken(
                         grantType = "authorization_code",
-                        clientId = app.clientId,
-                        clientSecret = app.clientSecret,
+                        clientId = clientId,
+                        clientSecret = clientSecret,
                         redirectUri = redirectUri,
                         scope = scope,
                         code = accountRepository.code
                     )
 
-                    mastodonApi.getAccount("Bearer ${token.accessToken}")
+                    mastodonApi.getAccount(token.authorization)
                 }
 
                 with(binding) {
-                    // TODO reuse account.displayName and replace emojis key in string with spannable image pointing to URL (can be animated or not)
+                    // TODO reuse account.displayName
+                    // TODO replace emojis key in string with spannable image pointing to URL (can be animated or not)
                     profileUsername.text = getString(R.string.profile_username, account.username)
                     profileFollowingCount.text = getString(R.string.profile_following_count, account.followingCount)
                     profileFollowersCount.text = getString(R.string.profile_followers_count, account.followersCount)
-                    profileAvatar.load(account.avatar) {
+                    // TODO static avatar URL with animated if available
+                    profileAvatar.load(account.avatarStaticUrl) {
                         crossfade(true)
                         placeholder(R.drawable.ic_baseline_account_circle_24)
                         transformations(CircleCropTransformation())
@@ -86,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             mastodonInstance.app = app
+            val clientId = checkNotNull(app.clientId) { "Application does not have expected clientId." }
 
             CustomTabsIntent.Builder()
                 .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
@@ -93,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
                 .launchUrl(
                     this@MainActivity,
-                    mastodonAuthorizeUri(mastodonInstance.authority, app.clientId, redirectUri, scope)
+                    mastodonAuthorizeUri(mastodonInstance.authority, clientId, redirectUri, scope)
                 )
         }
     }

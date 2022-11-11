@@ -20,8 +20,35 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Mention
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val mentionsData = listOf(
+    EntityTestParam.build(
+        """{
+          "id": "952529",
+          "username": "alayna",
+          "url": "https://desvox.es/users/alayna",
+          "acct": "alayna@desvox.es"
+        }""".trimIndent(),
+        Mention(
+            id = "952529",
+            username = "alayna",
+            url = "https://desvox.es/users/alayna",
+            acct = "alayna@desvox.es",
+        )
+    ),
+    EntityTestParam.build(
+        """{
+          "id": "14715",
+          "username": "trwnh",
+          "url": "https://mastodon.social/@trwnh",
+          "acct": "trwnh"
+        }""".trimIndent(),
+        Mention(
+            id = "14715",
+            username = "trwnh",
+            url = "https://mastodon.social/@trwnh",
+            acct = "trwnh",
+        ),
+    ),
+)

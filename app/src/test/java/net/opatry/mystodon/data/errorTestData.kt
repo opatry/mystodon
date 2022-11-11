@@ -20,8 +20,17 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Error
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val errorsData = listOf(
+    EntityTestParam.build(
+        """{
+          "error": "invalid_grant",
+          "error_description": "The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client."
+        }""".trimIndent(),
+        Error(
+            error = "invalid_grant",
+            errorDescription = "The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.",
+        ),
+    ),
+)

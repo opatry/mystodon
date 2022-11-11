@@ -20,8 +20,34 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Alerts
+import net.opatry.mystodon.api.entity.PushSubscription
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val pushSubscriptionsData = listOf(
+    EntityTestParam.build(
+        """{
+          "id": 328183,
+          "endpoint": "https://yourdomain.example/listener",
+          "alerts": {
+            "follow": false,
+            "favourite": false,
+            "reblog": false,
+            "mention": true,
+            "poll": false
+          },
+          "server_key": "BCk-QqERU0q-CfYZjcuB6lnyyOYfJ2AifKqfeGIm7Z-HiTU5T9eTG5GxVA0_OH5mMlI4UkkDTpaZwozy0TzdZ2M="
+        }""".trimIndent(),
+        PushSubscription(
+            id = "328183",
+            endpointUrl = "https://yourdomain.example/listener",
+            alerts = Alerts(
+                isFollow = false,
+                isFavourite = false,
+                isReblog = false,
+                isMention = true,
+                isPoll = false
+            ),
+            serverKey = "BCk-QqERU0q-CfYZjcuB6lnyyOYfJ2AifKqfeGIm7Z-HiTU5T9eTG5GxVA0_OH5mMlI4UkkDTpaZwozy0TzdZ2M="
+        )
+    ),
+)

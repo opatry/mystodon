@@ -20,8 +20,25 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.MediaVisibility
+import net.opatry.mystodon.api.entity.Preferences
+import net.opatry.mystodon.api.entity.Visibility
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val preferencesData = listOf(
+    EntityTestParam.build(
+        """{
+          "posting:default:visibility": "public",
+          "posting:default:sensitive": false,
+          "posting:default:language": null,
+          "reading:expand:media": "default",
+          "reading:expand:spoilers": false
+        }""".trimIndent(),
+        Preferences(
+            defaultVisibility = Visibility.Public,
+            isSensitiveByDefault = false,
+            defaultLanguage = null,
+            defaultMediaVisibility = MediaVisibility.Default,
+            areSpoilersExpandedByDefault = false,
+        )
+    ),
+)

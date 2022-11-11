@@ -18,10 +18,52 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents an emoji reaction to an Announcement.
+ */
+data class AnnouncementReaction(
+
+    // region Base attributes
+
+    /**
+     * The emoji used for the reaction. Either a unicode emoji, or a custom emoji's shortcode.
+     */
+    @SerializedName("name")
+    val name: String,
+
+    /**
+     * The total number of users who have added this reaction.
+     */
+    @SerializedName("count")
+    val count: Long,
+
+    /**
+     * Whether the authorized user has added this reaction to the announcement.
+     */
+    @SerializedName("me")
+    val isMe: Boolean,
+
+    // endregion
+
+    // region Custom emoji attributes
+
+    /**
+     * A link to the custom emoji.
+     * (URL)
+     */
+    @SerializedName("url")
+    val url: String? = null,
+
+    /**
+     * A link to a non-animated version of the custom emoji.
+     * (URL)
+     */
+    @SerializedName("static_url")
+    val staticUrl: String? = null,
+
+    // endregion
+)

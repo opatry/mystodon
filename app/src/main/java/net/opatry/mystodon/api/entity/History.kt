@@ -18,10 +18,37 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents daily usage history of a hashtag.
+ */
+data class History(
+
+    // region Required attributes
+
+    /**
+     * UNIX timestamp on midnight of the given day.
+     * (UNIX timestamp)
+     */
+    @SerializedName("day")
+    val day: String,
+
+    /**
+     * The counted usage of the tag within that day.
+     * (cast from an integer)
+     */
+    @SerializedName("uses")
+    val usesCount: Long,
+
+    /**
+     * The total of accounts using the tag within that day.
+     * (cast from an integer)
+     */
+    @SerializedName("accounts")
+    val accountsCount: Long,
+
+    // endregion
+)

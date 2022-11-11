@@ -18,10 +18,52 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents a custom emoji.
+ */
+data class Emoji(
+
+    // region Required attributes
+
+    /**
+     * The name of the custom emoji.
+     */
+    @SerializedName("shortcode")
+    val shortCode: String,
+
+    /**
+     * A link to the custom emoji.
+     * (URL)
+     */
+    @SerializedName("url")
+    val url: String,
+
+    /**
+     * A link to a static copy of the custom emoji.
+     * (URL)
+     */
+    @SerializedName("static_url")
+    val staticUrl: String,
+
+    /**
+     * Whether this Emoji should be visible in the picker or unlisted.
+     */
+    @SerializedName("visible_in_picker")
+    val isVisibleInPicker: Boolean,
+
+    // endregion
+
+    // region Optional attributes
+
+    /**
+     * Used for sorting custom emoji in the picker.
+     */
+    @SerializedName("category")
+    val category: String? = null,
+
+    // endregion
+)

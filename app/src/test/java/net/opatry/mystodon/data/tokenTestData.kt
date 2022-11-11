@@ -20,8 +20,21 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Token
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val tokensData = listOf(
+    EntityTestParam.build(
+        """{
+          "access_token": "ZA-Yj3aBD8U8Cm7lKUp-lm9O9BmDgdhHzDeqsY8tlL0",
+          "token_type": "Bearer",
+          "scope": "read write follow push",
+          "created_at": 1573979017
+        }""".trimIndent(),
+        Token(
+            accessToken = "ZA-Yj3aBD8U8Cm7lKUp-lm9O9BmDgdhHzDeqsY8tlL0",
+            tokenType = "Bearer",
+            scope = "read write follow push",
+            createdAt = 1573979017
+        )
+    ),
+)

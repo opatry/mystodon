@@ -18,10 +18,46 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
+import kotlin.collections.List
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents a conversation with "direct message" visibility.
+ */
+data class Conversation(
+
+    // region Required attributes
+
+    /**
+     * Local database ID of the conversation.
+     * (cast from an integer, but not guaranteed to be a number)
+     */
+    @SerializedName("id")
+    val id: String,
+
+    /**
+     * Participants in the conversation.
+     */
+    @SerializedName("accounts")
+    val accounts: List<Account>,
+
+    /**
+     * Is the conversation currently marked as unread?
+     */
+    @SerializedName("unread")
+    val isUnread: Boolean,
+
+    // endregion
+
+    // region Optional attributes
+
+    /**
+     * The last status in the conversation, to be used for optional display.
+     */
+    @SerializedName("last_status")
+    val lastStatus: Status? = null,
+
+    // endregion
+)

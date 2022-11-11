@@ -20,8 +20,14 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+data class EntityTestParam(val jsonPayload: String, val entityClass: Class<*>, val expectedEntity: Any) {
+    override fun toString(): String {
+        return "${entityClass.simpleName} ${jsonPayload.replace("[\\w]+", " ").take(40)}…"
+    }
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
+    companion object {
+        fun <T : Any> build(jsonPayload: String, expectedEntity: T): EntityTestParam {
+            return EntityTestParam(jsonPayload, expectedEntity::class.java, expectedEntity)
+        }
+    }
 }

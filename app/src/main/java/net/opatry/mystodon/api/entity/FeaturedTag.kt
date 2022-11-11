@@ -18,10 +18,49 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents a hashtag that is featured on a profile.
+ */
+data class FeaturedTag(
+
+    // region Attributes
+
+    /**
+     * The internal ID of the featured tag in the database.
+     * (cast from integer but not guaranteed to be a number)
+     */
+    @SerializedName("id")
+    val id: String,
+
+    /**
+     * The name of the hashtag being featured.
+     */
+    @SerializedName("name")
+    val name: String,
+
+    /**
+     * A link to all statuses by a user that contain this hashtag.
+     * (URL)
+     */
+    @SerializedName("url")
+    val url: String? = null,
+
+    /**
+     * The number of authored statuses containing this hashtag.
+     */
+    @SerializedName("statuses_count")
+    val statusesCount: Long,
+
+    /**
+     * The timestamp of the last authored status containing this hashtag.
+     * (ISO 8601 Datetime)
+     */
+    @SerializedName("last_status_at")
+    val lastStatusAt: String,
+
+    // endregion
+)

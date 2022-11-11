@@ -18,10 +18,33 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
+enum class Visibility {
+
+    /**
+     * Visible to everyone, shown in public timelines
+     */
+    @SerializedName("public")
+    Public,
+
+    /**
+     * Visible to public, but not included in public timelines
+     */
+    @SerializedName("unlisted")
+    Unlisted,
+
+    /**
+     * Visible to followers only, and to any mentioned users
+     */
+    @SerializedName("private")
+    Private,
+
+    /**
+     * Visible only to mentioned users
+     */
+    @SerializedName("direct")
+    Direct,
 }

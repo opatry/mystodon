@@ -20,8 +20,21 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.FeaturedTag
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val featuredTagsData = listOf(
+    EntityTestParam.build(
+        """{
+          "id": "627",
+          "name": "nowplaying",
+          "statuses_count": 36,
+          "last_status_at": "2019-11-15T07:14:43.524Z"
+        }""".trimIndent(),
+        FeaturedTag(
+            id = "627",
+            name = "nowplaying",
+            statusesCount = 36,
+            lastStatusAt = "2019-11-15T07:14:43.524Z",
+        ),
+    ),
+)

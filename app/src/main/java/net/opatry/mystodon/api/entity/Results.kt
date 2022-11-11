@@ -18,10 +18,36 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
+import kotlin.collections.List
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents the results of a search.
+ */
+data class Results(
+
+    // region Required attributes
+
+    /**
+     * Accounts which match the given query.
+     */
+    @SerializedName("accounts")
+    val accounts: List<Account>,
+
+    /**
+     * Statuses which match the given query.
+     */
+    @SerializedName("statuses")
+    val statuses: List<Status>,
+
+    /**
+     * Hashtags which match the given query.
+     * Array of [Tag] (v2). Array of [String] (v1).
+     */
+    @SerializedName("hashtags")
+    val hashtags: List<Tag>,
+
+    // endregion
+)

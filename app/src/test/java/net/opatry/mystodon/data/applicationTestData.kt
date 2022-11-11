@@ -22,6 +22,17 @@ package net.opatry.mystodon.data
 
 import net.opatry.mystodon.api.entity.Application
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val applicationsData = listOf(
+    EntityTestParam.build(
+        """{
+          "name": "test app",
+          "website": null,
+          "vapid_key": "BCk-QqERU0q-CfYZjcuB6lnyyOYfJ2AifKqfeGIm7Z-HiTU5T9eTG5GxVA0_OH5mMlI4UkkDTpaZwozy0TzdZ2M="
+        }""".trimIndent(),
+        Application(
+            name = "test app",
+            websiteUrl = null,
+            vapidKey = "BCk-QqERU0q-CfYZjcuB6lnyyOYfJ2AifKqfeGIm7Z-HiTU5T9eTG5GxVA0_OH5mMlI4UkkDTpaZwozy0TzdZ2M=",
+        ),
+    ),
+)

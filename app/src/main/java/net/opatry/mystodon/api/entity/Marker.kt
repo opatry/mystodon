@@ -18,10 +18,51 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+data class MarkerData(
+
+    /**
+     * The ID of the most recently viewed entity.
+     * (cast from integer but not guaranteed to be a number)
+     */
+    @SerializedName("last_read_id")
+    val lastReadId: String,
+
+    /**
+     * The timestamp of when the marker was set.
+     * (ISO 8601 Datetime)
+     */
+    @SerializedName("updated_at")
+    val updatedAt: String,
+
+    /**
+     * Used for locking to prevent write conflicts.
+     */
+    @SerializedName("version")
+    val version: Long,
+)
+
+/**
+ * Represents the last read position within a user's timelines.
+ */
+data class Marker(
+
+    // region Base attributes
+
+    /**
+     * Information about the user's position in the home timeline.
+     */
+    @SerializedName("home")
+    val home: MarkerData,
+
+    /**
+     * Information about the user's position in their notifications.
+     */
+    @SerializedName("notifications")
+    val notifications: MarkerData,
+
+    // endregion
+)

@@ -18,10 +18,49 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents a proof from an external identity provider.
+ */
+data class IdentityProof(
+
+    // region Attributes
+
+    /**
+     * The name of the identity provider.
+     */
+    @SerializedName("provider")
+    val provider: String,
+
+    /**
+     * The account owner's username on the identity provider's service.
+     */
+    @SerializedName("provider_username")
+    val providerUsername: String,
+
+    /**
+     * The account owner's profile URL on the identity provider.
+     * (URL)
+     */
+    @SerializedName("profile_url")
+    val profileUrl: String,
+
+    /**
+     * A link to a statement of identity proof, hosted by the identity provider.
+     * (URL)
+     */
+    @SerializedName("proof_url")
+    val proofUrl: String,
+
+    /**
+     * When the identity proof was last updated.
+     * (ISO 8601 Datetime)
+     */
+    @SerializedName("updated_at")
+    val updatedAt: String,
+
+    // endregion
+)

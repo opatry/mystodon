@@ -20,8 +20,39 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Relationship
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val relationshipsData = listOf(
+    EntityTestParam.build(
+        """{
+          "id": "1",
+          "following": true,
+          "showing_reblogs": true,
+          "notifying": false,
+          "followed_by": true,
+          "blocking": false,
+          "blocked_by": false,
+          "muting": false,
+          "muting_notifications": false,
+          "requested": false,
+          "domain_blocking": false,
+          "endorsed": false,
+          "note": ""
+        }""".trimIndent(),
+        Relationship(
+            id = "1",
+            isFollowing = true,
+            isShowingReblogs = true,
+            isNotifying = false,
+            isFollowedBy = true,
+            isBlocking = false,
+            isBlockedBy = false,
+            isMuting = false,
+            isMutingNotifications = false,
+            isRequested = false,
+            isDomainBlocking = false,
+            isEndorsed = false,
+            note = ""
+        )
+    ),
+)

@@ -20,8 +20,36 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Filter
+import net.opatry.mystodon.api.entity.FilterContext
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val filtersData = listOf(
+    EntityTestParam.build(
+        """{
+          "id": "8449",
+          "phrase": "test",
+          "context": [
+            "home",
+            "notifications",
+            "public",
+            "thread"
+          ],
+          "whole_word": false,
+          "expires_at": "2019-11-26T09:08:06.254Z",
+          "irreversible": true
+        }""".trimIndent(),
+        Filter(
+            id = "8449",
+            phrase = "test",
+            context = listOf(
+                FilterContext.Home,
+                FilterContext.Notifications,
+                FilterContext.Public,
+                FilterContext.Thread,
+            ),
+            isWholeWord = false,
+            expiresAt = "2019-11-26T09:08:06.254Z",
+            isIrreversible = true
+        ),
+    ),
+)

@@ -18,10 +18,44 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents a weekly bucket of instance activity.
+ */
+data class Activity(
+
+    // region Attributes
+
+    /**
+     * Midnight at the first day of the week.
+     * (UNIX Timestamp)
+     */
+    @SerializedName("week")
+    val week: String,
+
+    /**
+     * Statuses created since the week began.
+     * (cast from an integer)
+     */
+    @SerializedName("statuses")
+    val statusesCount: Long,
+
+    /**
+     * User logins since the week began.
+     * (cast from an integer)
+     */
+    @SerializedName("logins")
+    val loginsCount: Long,
+
+    /**
+     * User registrations since the week began.
+     * (cast from an integer)
+     */
+    @SerializedName("registrations")
+    val registrationsCount: Long,
+
+    // endregion
+)

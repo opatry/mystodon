@@ -18,10 +18,36 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry
 
-import net.opatry.mystodon.api.entity.Application
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
+@ExperimentalCoroutinesApi
+@RunWith(JUnit4::class)
+class PostsViewModelTest {
+
+//    @get:Rule
+//    var coroutinesRule = MainCoroutineRule()
+//
+//    @get:Rule
+//    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+//    private fun usingMastodonApi(test: (MockWebServer, MastodonApi) -> Unit) {
+//        val mockServer = MockWebServer()
+//        try {
+//            mockServer.start()
+//
+//            val builder = Retrofit.Builder()
+//                .baseUrl(mockServer.url("/"))
+//                .addConverterFactory(GsonConverterFactory.create())
+//            val service = builder.build().create(MastodonApi::class.java)
+//            coroutinesRule.runBlocking {
+//                test(mockServer, service)
+//            }
+//        } finally {
+//            mockServer.shutdown()
+//        }
+//    }
 }

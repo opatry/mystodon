@@ -18,10 +18,40 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
+import kotlin.collections.List
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+/**
+ * Represents a hashtag used within the content of a status.
+ */
+data class Tag(
+
+    // region Base attributes
+
+    /**
+     * The value of the hashtag after the # sign.
+     */
+    @SerializedName("name")
+    val name: String,
+
+    /**
+     * A link to the hashtag on the instance.
+     * (URL)
+     */
+    @SerializedName("url")
+    val url: String,
+
+    // endregion
+
+    // region Optional attributes
+
+    /**
+     * Usage statistics for given days.
+     */
+    @SerializedName("history")
+    val history: List<History>,
+
+    // endregion
+)

@@ -18,10 +18,56 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.data
+package net.opatry.mystodon.api.entity
 
-import net.opatry.mystodon.api.entity.Application
+import com.google.gson.annotations.SerializedName
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
+enum class ReplyPolicy {
+
+    /**
+     * Show replies to any followed user.
+     */
+    @SerializedName("followed")
+    Followed,
+
+    /**
+     * Show replies to members of the list.
+     */
+    @SerializedName("list")
+    List,
+
+    /**
+     * Show replies to no one.
+     */
+    @SerializedName("none")
+    None,
 }
+
+/**
+ * Represents a list of some users that the authenticated user follows.
+ */
+data class List(
+
+    // region Required attributes
+
+    /**
+     * The internal database ID of the list.
+     * (cast from an integer, but not guaranteed to be a number)
+     */
+    @SerializedName("id")
+    val id: String,
+
+    /**
+     * The user-defined title of the list.
+     */
+    @SerializedName("title")
+    val title: String,
+
+    /**
+     * The user-defined title of the list.
+     */
+    @SerializedName("replies_policy")
+    val repliesPolicy: ReplyPolicy,
+
+    // endregion
+)

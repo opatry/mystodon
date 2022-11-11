@@ -20,8 +20,34 @@
 
 package net.opatry.mystodon.data
 
-import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Marker
+import net.opatry.mystodon.api.entity.MarkerData
 
-class MastodonInstance(val authority: String, val url: String) {
-    var app: Application? = null // FIXME quick & dirty
-}
+val markersData = listOf(
+    EntityTestParam.build(
+        """{
+          "home": {
+            "last_read_id": "103194548672408537",
+            "version": 462,
+            "updated_at": "2019-11-24T19:39:39.337Z"
+          },
+          "notifications": {
+            "last_read_id": "35050107",
+            "version": 356,
+            "updated_at": "2019-11-25T13:47:31.333Z"
+          }
+        }""".trimIndent(),
+        Marker(
+            home = MarkerData(
+                lastReadId = "103194548672408537",
+                version = 462,
+                updatedAt = "2019-11-24T19:39:39.337Z",
+            ),
+            notifications = MarkerData(
+                lastReadId = "35050107",
+                version = 356,
+                updatedAt = "2019-11-25T13:47:31.333Z",
+            ),
+        )
+    ),
+)
