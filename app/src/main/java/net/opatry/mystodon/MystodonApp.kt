@@ -21,18 +21,21 @@
 package net.opatry.mystodon
 
 import android.app.Application
+import net.opatry.mystodon.api.InstancesSocialApi
 import net.opatry.mystodon.api.MastodonApi
 import net.opatry.mystodon.data.AccountRepository
 import net.opatry.mystodon.data.MastodonInstance
 import net.opatry.mystodon.di.AccountRepositoryProvider
+import net.opatry.mystodon.di.InstancesSocialApiProvider
 import net.opatry.mystodon.di.MastodonApiProvider
 import net.opatry.mystodon.di.MastodonInstanceProvider
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
 class MystodonApp
-    : Application(), MastodonInstanceProvider, MastodonApiProvider, AccountRepositoryProvider {
+    : Application(), MastodonInstanceProvider, MastodonApiProvider, InstancesSocialApiProvider, AccountRepositoryProvider {
 
     override val mastodonInstance: MastodonInstance =
         MastodonInstance("androiddev.social", "https://androiddev.social/")
@@ -43,6 +46,28 @@ class MystodonApp
         .build()
 
     override val mastodonApi: MastodonApi = mastodonRetrofit.create()
+
+    private val instancesSocialRetrofit: Retrofit = Retrofit.Builder()
+        .client(
+            OkHttpClient.Builder()
+                // FIXME .authenticator doing the same doesn't work as intented
+                .addInterceptor { chain ->
+                    val request = chain.request()
+                    if (request.header("Authorization") != null) {
+                        chain.proceed(request)
+                    } else {
+                        val decoratedRequest =
+                            request.newBuilder().header("Authorization", "Bearer ${BuildConfig.INSTANCES_SOCIAL_TOKEN}")
+                                .build()
+                        chain.proceed(decoratedRequest)
+                    }
+                }
+                .build())
+        .baseUrl("https://instances.social/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    override val instancesSocialApi: InstancesSocialApi = instancesSocialRetrofit.create()
 
     override val accountRepository: AccountRepository = AccountRepository()
 
