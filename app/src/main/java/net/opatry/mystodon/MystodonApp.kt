@@ -27,23 +27,22 @@ import net.opatry.mystodon.data.MastodonInstance
 import net.opatry.mystodon.di.AccountRepositoryProvider
 import net.opatry.mystodon.di.MastodonApiProvider
 import net.opatry.mystodon.di.MastodonInstanceProvider
-import net.opatry.mystodon.di.RetrofitProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
 class MystodonApp
-    : Application(), MastodonInstanceProvider, RetrofitProvider, MastodonApiProvider, AccountRepositoryProvider {
+    : Application(), MastodonInstanceProvider, MastodonApiProvider, AccountRepositoryProvider {
 
     override val mastodonInstance: MastodonInstance =
         MastodonInstance("androiddev.social", "https://androiddev.social/")
 
-    override val retrofit: Retrofit = Retrofit.Builder()
+    private val mastodonRetrofit: Retrofit = Retrofit.Builder()
         .baseUrl(mastodonInstance.url)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    override val mastodonApi: MastodonApi = retrofit.create()
+    override val mastodonApi: MastodonApi = mastodonRetrofit.create()
 
     override val accountRepository: AccountRepository = AccountRepository()
 
