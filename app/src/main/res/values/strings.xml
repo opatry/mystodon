@@ -6,4 +6,12 @@
     <string name="profile_username">\@%s</string>
     <string name="profile_following_count">↑ %d</string>
     <string name="profile_followers_count">↓ %d</string>
+    <string name="onboarding_instance_name_input_title">Mastodon instance name</string>
+    <string name="onboarding_instance_name_input_placeholder">\@mastodon.social</string>
+    <string name="onboarding_continue_button_contentDescription">Continue</string>
+    <string name="onboarding_no_instance_found_title">No instance found.</string>
+    <string name="onboarding_no_instance_found_explanation">We didn\'t find any instance matching the provided name.
+It doesn\'t necessarily mean it\'s incorrect, you can proceed and check if it works with your credentials.
+Maybe there is a typo preventing our search to find it or it could be no registered in the directory we use.</string>
+    <string name="onboarding_instance_name_title">\@%s</string>
 </resources>
