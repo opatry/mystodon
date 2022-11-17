@@ -36,6 +36,9 @@
                 <data android:scheme="mystodon" android:host="auth-callback" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".onboarding.OnboardingActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

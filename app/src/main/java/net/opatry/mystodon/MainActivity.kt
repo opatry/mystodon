@@ -1,6 +1,8 @@
 package net.opatry.mystodon
 
+import android.app.Activity
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.lifecycleScope
@@ -15,8 +17,8 @@ import net.opatry.mystodon.api.mastodonAuthorizeUri
 import net.opatry.mystodon.data.AccountRepository
 import net.opatry.mystodon.data.MastodonInstance
 import net.opatry.mystodon.databinding.MainActivityBinding
-import net.opatry.mystodon.databinding.OnboardingActivityBinding
-import net.opatry.mystodon.ui.OnboardingInstancesAdapter
+import net.opatry.mystodon.onboarding.OnboardingActivity
+import net.opatry.mystodon.onboarding.OnboardingResult
 import javax.inject.Inject
 
 private const val appClientName = "mystodon"
@@ -41,8 +43,23 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var mastodonApi: MastodonApi
 
+    private val launchOnboarding = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = checkNotNull(result.data) { "No data provided by OnboardingActivity" }
+            val onboardingResult = OnboardingResult(intent)
+            //launchSignIn.launch(SignInActivity.newIntent(this, onboardingResult.selectedInstanceUrl))
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // TODO extract nav state machine which depends on app state (SharedPreferences?)
+
+        if (true) {
+            launchOnboarding.launch(OnboardingActivity.newIntent(this))
+            return
+        }
 
         if (accountRepository.code.isNullOrEmpty()) {
             proceedWithAuthenticationFlow()

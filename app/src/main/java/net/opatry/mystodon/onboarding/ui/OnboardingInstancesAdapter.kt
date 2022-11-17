@@ -18,32 +18,41 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package net.opatry.mystodon.ui
+package net.opatry.mystodon.onboarding.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import net.opatry.mystodon.R
-import net.opatry.mystodon.api.Instance
 import net.opatry.mystodon.databinding.OnboardingMastodonInstanceCellLayoutBinding
 
 class OnboardingInstanceViewHolder(private val binding: OnboardingMastodonInstanceCellLayoutBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(instance: Instance, callback: (Instance) -> Unit) {
+    fun bind(instance: OnboardingInstance, callback: (OnboardingInstance) -> Unit) {
         val imageCornerRadius = binding.root.resources.getDimension(R.dimen.onboarding_instance_cell_icon_corner_radius)
+        binding.root.isSelected = instance.isSelected
         binding.onboardingMastodonInstanceCellIcon.load(instance.thumbnailUrl) {
             crossfade(true)
-            placeholder(R.drawable.ic_baseline_language_24)
-            transformations(RoundedCornersTransformation(imageCornerRadius))
+            placeholder(R.drawable.ic_baseline_language_24) // FIXME
+            fallback(R.drawable.ic_launcher_foreground) // FIXME
+            transformations(RoundedCornersTransformation(imageCornerRadius)) // TODO Squircle
         }
 
-        binding.onboardingMastodonInstanceCellTitle.text = binding.root.resources.getString(R.string.onboarding_instance_name_title, instance.name)
-        binding.onboardingMastodonInstanceCellDescription.text = instance.info?.shortDescription
+        binding.onboardingMastodonInstanceCellTitle.text =
+            binding.root.resources.getString(R.string.onboarding_instance_name_title, instance.name)
+        binding.onboardingMastodonInstanceCellDescription.text = instance.description
+        binding.onboardingMastodonInstanceCellDescription.isVisible = instance.description.isNotBlank()
+        binding.onboardingMastodonInstanceCellUserCount.text = instance.usersCount.toString()
+        binding.onboardingMastodonInstanceCellUserCount.isVisible = instance.usersCount > 0
+        binding.onboardingMastodonInstanceCellLanguages.text = instance.languages.joinToString(", ")
+        binding.onboardingMastodonInstanceCellLanguages.isVisible = instance.languages.isNotEmpty()
+        binding.onboardingMastodonInstanceCellExactMatch.isVisible = instance.isExactMatch
 
         binding.root.setOnClickListener {
             callback.invoke(instance)
@@ -56,8 +65,8 @@ class OnboardingInstanceViewHolder(private val binding: OnboardingMastodonInstan
 }
 
 class OnboardingInstancesAdapter(
-    private val callback: (Instance) -> Unit,
-) : ListAdapter<Instance, OnboardingInstanceViewHolder>(DIFF_CALLBACK) {
+    private val callback: (OnboardingInstance) -> Unit,
+) : ListAdapter<OnboardingInstance, OnboardingInstanceViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OnboardingInstanceViewHolder {
         return OnboardingInstanceViewHolder(
@@ -78,7 +87,7 @@ class OnboardingInstancesAdapter(
         holder.unbind()
     }
 
-    override fun submitList(list: List<Instance>?) {
+    override fun submitList(list: List<OnboardingInstance>?) {
         if (list == null) {
             super.submitList(null)
         } else {
@@ -87,12 +96,12 @@ class OnboardingInstancesAdapter(
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Instance>() {
-            override fun areItemsTheSame(oldItem: Instance, newItem: Instance): Boolean {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<OnboardingInstance>() {
+            override fun areItemsTheSame(oldItem: OnboardingInstance, newItem: OnboardingInstance): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: Instance, newItem: Instance): Boolean {
+            override fun areContentsTheSame(oldItem: OnboardingInstance, newItem: OnboardingInstance): Boolean {
                 return oldItem == newItem
             }
         }
