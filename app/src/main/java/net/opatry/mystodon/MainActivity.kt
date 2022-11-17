@@ -6,14 +6,18 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.opatry.mystodon.api.MastodonApi
 import net.opatry.mystodon.api.mastodonAuthorizeUri
+import net.opatry.mystodon.data.AccountRepository
+import net.opatry.mystodon.data.MastodonInstance
 import net.opatry.mystodon.databinding.MainActivityBinding
-import net.opatry.mystodon.di.AccountRepositoryProvider
-import net.opatry.mystodon.di.MastodonApiProvider
-import net.opatry.mystodon.di.MastodonInstanceProvider
+import net.opatry.mystodon.databinding.OnboardingActivityBinding
+import net.opatry.mystodon.ui.OnboardingInstancesAdapter
+import javax.inject.Inject
 
 private const val appClientName = "mystodon"
 
@@ -24,13 +28,18 @@ private const val redirectUri = "mystodon://auth-callback"
 private const val scope = "read write follow push"
 private const val website = "https://mystodon.opatry.net"
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: MainActivityBinding
 
-    // TODO Hilt DI instead of "manual DI"
-    private val accountRepository by lazy { (application as AccountRepositoryProvider).accountRepository }
-    private val mastodonInstance by lazy { (application as MastodonInstanceProvider).mastodonInstance }
-    private val mastodonApi by lazy { (application as MastodonApiProvider).mastodonApi }
+    @Inject
+    lateinit var accountRepository: AccountRepository
+
+    @Inject
+    lateinit var mastodonInstance: MastodonInstance
+
+    @Inject
+    lateinit var mastodonApi: MastodonApi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
                 .launchUrl(
                     this@MainActivity,
-                    mastodonAuthorizeUri(mastodonInstance.authority, clientId, redirectUri, scope)
+                    mastodonAuthorizeUri(mastodonInstance.url, clientId, redirectUri, scope)
                 )
         }
     }

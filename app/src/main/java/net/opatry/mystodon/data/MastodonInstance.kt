@@ -22,6 +22,7 @@ package net.opatry.mystodon.data
 
 import net.opatry.mystodon.api.entity.Application
 
-class MastodonInstance(val authority: String, val url: String) {
+class MastodonInstance(val url: String) {
+    // FIXME quick & dirty
     var app: Application? = null // FIXME quick & dirty
 }

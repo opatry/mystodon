@@ -23,11 +23,13 @@ package net.opatry.mystodon
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import net.opatry.mystodon.data.AccountRepository
 import net.opatry.mystodon.databinding.AuthCallbackActivityBinding
-import net.opatry.mystodon.di.AccountRepositoryProvider
+import javax.inject.Inject
 
 class AuthCallbackActivity : AppCompatActivity() {
-    private val accountRepository by lazy { (application as AccountRepositoryProvider).accountRepository }
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

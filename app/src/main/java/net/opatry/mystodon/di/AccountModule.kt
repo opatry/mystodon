@@ -20,8 +20,17 @@
 
 package net.opatry.mystodon.di
 
-import net.opatry.mystodon.api.MastodonApi
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import net.opatry.mystodon.data.AccountRepository
 
-interface MastodonApiProvider {
-    val mastodonApi: MastodonApi
+@Module
+@InstallIn(SingletonComponent::class)
+internal object AccountModule {
+    @Provides
+    fun provideAccountRepository(): AccountRepository {
+        return AccountRepository()
+    }
 }

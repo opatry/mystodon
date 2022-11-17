@@ -31,19 +31,23 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 fun mastodonAuthorizeUri(
-    instanceAuthority: String,
+    instanceUrl: String,
     clientId: String,
     redirectUri: String,
     scope: String
-): Uri = Uri.Builder()
-    .scheme("https")
-    .authority(instanceAuthority)
-    .path("/oauth/authorize")
-    .appendQueryParameter("response_type", "code")
-    .appendQueryParameter("client_id", clientId)
-    .appendQueryParameter("redirect_uri", redirectUri)
-    .appendQueryParameter("scope", scope)
-    .build()
+): Uri {
+    val scheme = instanceUrl.substringBefore("://")
+    val authority = instanceUrl.substringAfter("://").substringBefore('/')
+    return Uri.Builder()
+        .scheme(scheme)
+        .authority(authority)
+        .path("/oauth/authorize")
+        .appendQueryParameter("response_type", "code")
+        .appendQueryParameter("client_id", clientId)
+        .appendQueryParameter("redirect_uri", redirectUri)
+        .appendQueryParameter("scope", scope)
+        .build()
+}
 
 interface MastodonApi {
 

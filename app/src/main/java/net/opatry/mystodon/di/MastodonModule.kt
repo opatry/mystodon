@@ -20,9 +20,34 @@
 
 package net.opatry.mystodon.di
 
-import net.opatry.mystodon.api.InstancesSocialApi
+import android.app.Application
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import net.opatry.mystodon.api.MastodonApi
+import net.opatry.mystodon.data.MastodonInstance
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
-interface InstancesSocialApiProvider {
-    val instancesSocialApi: InstancesSocialApi
+@Module
+@InstallIn(SingletonComponent::class)
+internal object MastodonModule {
+
+    @Provides
+    fun provideMastodonInstance(): MastodonInstance {
+        return MastodonInstance("https://androiddev.social/")
+    }
+
+    @Provides
+    fun provideMastodonApi(mastodonInstance: MastodonInstance): MastodonApi {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(mastodonInstance.url)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        return retrofit.create()
+    }
 }
-
