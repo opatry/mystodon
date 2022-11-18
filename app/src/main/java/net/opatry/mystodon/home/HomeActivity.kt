@@ -24,6 +24,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -34,6 +35,7 @@ import kotlinx.coroutines.withContext
 import net.opatry.mystodon.R
 import net.opatry.mystodon.api.MastodonApi
 import net.opatry.mystodon.databinding.ProfileActivityBinding
+import net.opatry.mystodon.ui.html
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -63,6 +65,12 @@ class HomeActivity : AppCompatActivity() {
                     getString(R.string.profile_following_count, account.followingCount)
                 profileFollowersCount.text =
                     getString(R.string.profile_followers_count, account.followersCount)
+                profileBio.html = account.note
+                profileBio.isVisible = account.note.isNotEmpty()
+                // TODO static avatar URL with animated if available
+                profileHeaderBackground.load(account.headerStaticUrl) {
+                    crossfade(true)
+                }
                 // TODO static avatar URL with animated if available
                 profileAvatar.load(account.avatarStaticUrl) {
                     crossfade(true)

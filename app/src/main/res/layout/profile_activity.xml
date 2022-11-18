@@ -26,30 +26,65 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              tools:context=".MainActivity">
+              tools:context=".home.HomeActivity">
 
-    <ImageView
-        android:id="@+id/profile_avatar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        tools:src="@tools:sample/avatars" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/profile_header_background"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:fitsSystemWindows="true"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center_horizontal"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <ImageView
+            android:id="@+id/profile_avatar"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="16dp"
+            tools:src="@tools:sample/avatars" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="16dp">
+
+        <TextView
+            android:id="@+id/profile_username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            tools:text="\@opatry" />
+
+        <TextView
+            android:id="@+id/profile_following_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            tools:text="↑ 42" />
+
+        <TextView
+            android:id="@+id/profile_followers_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            tools:text="↓ 8" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/profile_username"
+        android:id="@+id/profile_bio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="\@opatry" />
-
-    <TextView
-        android:id="@+id/profile_following_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="↑ 42" />
-
-    <TextView
-        android:id="@+id/profile_followers_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="↓ 8" />
+        android:layout_marginHorizontal="16dp"
+        tools:text="@tools:sample/lorem/random[1]"/>
 
 </LinearLayout>
