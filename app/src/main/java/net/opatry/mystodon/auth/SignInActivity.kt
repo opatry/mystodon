@@ -23,49 +23,77 @@ package net.opatry.mystodon.auth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.opatry.mystodon.R
+import net.opatry.mystodon.account.AccountManager
+import net.opatry.mystodon.account.MastodonToken
 import net.opatry.mystodon.api.MastodonApi
 import net.opatry.mystodon.api.mastodonAuthorizeUri
-import net.opatry.mystodon.data.AccountRepository
 import net.opatry.mystodon.databinding.AuthCallbackActivityBinding
 import javax.inject.Inject
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 private const val appClientName = "mystodon"
 
-/**
- * see AndroidManifest `<intent-filter>` for [SignInActivity]
- */
-private const val redirectUri = "mystodon://auth-callback"
 private const val scope = "read write follow push"
 private const val website = "https://mystodon.opatry.net"
+
+inline operator fun <reified T> SavedStateHandle.invoke(): ReadWriteProperty<Any, T?> = object : ReadWriteProperty<Any, T?> {
+    private fun key(thisRef: Any, property: KProperty<*>): String = "${thisRef.javaClass.name}/${property.name}"
+
+    override fun getValue(thisRef: Any, property: KProperty<*>): T? {
+        return get(key(thisRef, property))
+    }
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: T?) {
+        set(key(thisRef, property), value)
+    }
+}
+
+@HiltViewModel
+class SignInViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : ViewModel() {
+    var clientId: String? by savedStateHandle()
+    var clientSecret: String? by savedStateHandle()
+}
 
 @AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
     @Inject
-    lateinit var accountRepository: AccountRepository
+    lateinit var accountManager: AccountManager
 
     @Inject
     lateinit var mastodonApi: MastodonApi
 
+    private val viewModel: SignInViewModel by viewModels()
+
+    private val redirectUri by lazy {
+        "${getString(R.string.auth_redirect_scheme)}://${getString(R.string.auth_redirect_host)}"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val token = accountRepository.token
+        val token = accountManager.currentAccount
         if (token != null) {
             setResult(RESULT_OK)
             finish()
         }
-        // FIXME how to create mastodonApi before we know the Url to use but still use mastodonApi to retrieve App
-//            val instanceUrl = requireNotNull(intent.getStringExtra(MASTODON_INSTANCE_URL_KEY)) {
-//                "No instance URL provided"
-//            }
-        val instanceUrl = "https://androiddev.social" // FIXME also hardcoded in MastodonModule.provideMastodonApi
+
+        val instanceUrl = requireNotNull(intent.getStringExtra(MASTODON_INSTANCE_URL_KEY)) {
+            "No instance URL provided"
+        }
+        accountManager.switchInstance(instanceUrl)
 
         lifecycleScope.launch(Dispatchers.Main) {
             // FIXME needed at each launch? when is it revoked? never? store it in sharedprefs/db?
@@ -78,9 +106,11 @@ class SignInActivity : AppCompatActivity() {
                 )
             }
 
+            val clientSecret = checkNotNull(app.clientSecret) { "Application does not have expected clientSecret." }
             val clientId = checkNotNull(app.clientId) { "Application does not have expected clientId." }
+            viewModel.clientSecret = clientSecret
+            viewModel.clientId = clientId
 
-            accountRepository.app = app
             CustomTabsIntent.Builder()
                 .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
                 .setShowTitle(true)
@@ -105,15 +135,14 @@ class SignInActivity : AppCompatActivity() {
             binding.authCallbackErrorDetail.text = errorDescription
         } else {
             val code = data?.getQueryParameter("code")
-            val app = checkNotNull(accountRepository.app)
 
             // TODO better error management on app clientId/clientSecret state management
-            val (clientId, clientSecret) = checkNotNull(app.clientId) { "Application does not have expected clientId." } to
-                    checkNotNull(app.clientSecret) { "Application does not have expected clientSecret." }
+            val clientId = checkNotNull(viewModel.clientId) { "Missing expected clientId." }
+            val clientSecret = checkNotNull(viewModel.clientSecret) { "Missing expected clientSecret." }
 
             lifecycleScope.launch(Dispatchers.Main) {
                 val token = withContext(Dispatchers.IO) {
-                    // TODO do that only once + HTTP Client interceptor
+                    // TODO do that only once
                     mastodonApi.getToken(
                         grantType = "authorization_code",
                         clientId = clientId,
@@ -123,7 +152,7 @@ class SignInActivity : AppCompatActivity() {
                         code = code
                     )
                 }
-                accountRepository.token = token
+                accountManager.addAccount(MastodonToken(token.tokenType, token.accessToken))
                 setResult(RESULT_OK)
                 finish()
             }

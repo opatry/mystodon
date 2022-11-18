@@ -108,12 +108,12 @@ interface MastodonApi {
      * https://docs.joinmastodon.org/methods/apps/
      */
     @GET("api/v1/apps/verify_credentials")
-    suspend fun verifyCredentials(@Header("Authorization") bearerToken: String): Application
+    suspend fun verifyCredentials(): Application
 
     /**
      * @return the user's own [Account] with Source
      */
     @GET("api/v1/accounts/verify_credentials")
-    suspend fun getAccount(@Header("Authorization") bearerToken: String): Account
+    suspend fun getAccount(): Account
 
 }

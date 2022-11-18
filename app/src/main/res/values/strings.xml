@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">mystodon</string>
 
+    <string name="auth_redirect_scheme" translatable="false">mystodon</string>
+    <string name="auth_redirect_host" translatable="false">auth-callback</string>
+
     <string name="auth_callback_error">Authentication error</string>
 
     <string name="profile_username">\@%s</string>

@@ -25,8 +25,8 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
+import net.opatry.mystodon.account.AccountManager
 import net.opatry.mystodon.auth.SignInActivity
-import net.opatry.mystodon.data.AccountRepository
 import net.opatry.mystodon.home.HomeActivity
 import net.opatry.mystodon.onboarding.OnboardingActivity
 import net.opatry.mystodon.onboarding.OnboardingResult
@@ -35,7 +35,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject
-    lateinit var accountRepository: AccountRepository
+    lateinit var accountManager: AccountManager
 
     private val onboardingLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         // TODO extract nav state machine which depends on app state (SharedPreferences?)
 
         when {
-            accountRepository.token == null ->
+            accountManager.currentAccount == null ->
                 onboardingLauncher.launch(OnboardingActivity.newIntent(this))
             else -> {
                 finish()

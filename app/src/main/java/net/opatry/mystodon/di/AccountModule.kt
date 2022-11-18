@@ -24,7 +24,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import net.opatry.mystodon.data.AccountRepository
+import net.opatry.mystodon.account.AccountManager
+import net.opatry.mystodon.account.AccountManagerImpl
 import javax.inject.Singleton
 
 @Module
@@ -32,7 +33,7 @@ import javax.inject.Singleton
 internal object AccountModule {
     @Singleton
     @Provides
-    fun provideAccountRepository(): AccountRepository {
-        return AccountRepository()
+    fun provideAccountManager(): AccountManager {
+        return AccountManagerImpl()
     }
 }

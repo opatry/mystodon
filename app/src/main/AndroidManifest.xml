@@ -33,7 +33,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="mystodon" android:host="auth-callback" />
+                <data android:scheme="@string/auth_redirect_scheme" android:host="@string/auth_redirect_host" />
             </intent-filter>
         </activity>
         <activity

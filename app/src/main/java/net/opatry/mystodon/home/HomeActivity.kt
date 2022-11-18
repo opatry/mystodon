@@ -33,16 +33,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.opatry.mystodon.R
 import net.opatry.mystodon.api.MastodonApi
-import net.opatry.mystodon.data.AccountRepository
 import net.opatry.mystodon.databinding.ProfileActivityBinding
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ProfileActivityBinding
-
-    @Inject
-    lateinit var accountRepository: AccountRepository
 
     @Inject
     lateinit var mastodonApi: MastodonApi
@@ -53,14 +49,10 @@ class HomeActivity : AppCompatActivity() {
         binding = ProfileActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // TODO better error management on token state management
-        val token = checkNotNull(accountRepository.token) {
-            "No token available"
-        }
-        // TODO Authorization interceptor in mastodonApi
         lifecycleScope.launch(Dispatchers.Main) {
+            // TODO ideally should only be done once and made available through AccountManager
             val account = withContext(Dispatchers.IO) {
-                mastodonApi.getAccount(token.authorization)
+                mastodonApi.getAccount()
             }
 
             with(binding) {

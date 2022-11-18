@@ -20,11 +20,16 @@
 
 package net.opatry.mystodon.di
 
+import android.os.Build
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import net.opatry.mystodon.BuildConfig
 import net.opatry.mystodon.api.MastodonApi
+import net.opatry.mystodon.auth.AuthHttpInterceptor
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
@@ -33,29 +38,39 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 internal object MastodonModule {
+    private val USER_AGENT = "Mystodon/${BuildConfig.VERSION_NAME} Android/${Build.VERSION.RELEASE}"
 
     @Singleton
     @Provides
-    fun provideMastodonApi(): MastodonApi {
-        // FIXME URL from settings but provided at runtime if instance chose, how to singleton it??!!!!!!
+    fun provideMastodonApi(authHttpInterceptor: AuthHttpInterceptor): MastodonApi {
+        val httpClientBuilder = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val originalRequest = chain.request()
+                val decoratedRequest = originalRequest.newBuilder()
+                    .header("User-Agent", USER_AGENT)
+                    .build()
+                chain.proceed(decoratedRequest)
+            }
+            .addInterceptor(authHttpInterceptor)
+
+        if (BuildConfig.DEBUG) {
+            val loggingInterceptor = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.HEADERS
+            }
+            httpClientBuilder.addInterceptor(loggingInterceptor)
+        }
+
+        val httpClient = httpClientBuilder.build()
+
+        // This URL will never be called (hopefully!), we
+        // must provide a Url at setup time but it will be dynamically replaced by AuthHttpInterceptor
+        // once the user chooses its Mastodon Instance.
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://androiddev.social")
+            .baseUrl("https://mystodon.hook")
+            .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         return retrofit.create()
     }
 }
 
-/*
-val httpClient: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
-        .addNetworkInterceptor { chain ->
-            val originalRequest = chain.request()
-//            val requestWithUserAgent = originalRequest.newBuilder()
-//                .header("User-Agent", "Mystodon/${BuildConfig.VERSION_NAME}") // TODO Android version
-//                .build()
-//            chain.proceed(requestWithUserAgent)
-            chain.proceed(originalRequest)
-        }
-        .build()
- */

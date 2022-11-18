@@ -55,7 +55,4 @@ data class Token(
     val createdAt: Long,
 
     // endregion
-) {
-    val authorization: String
-        get() = "$tokenType $accessToken"
-}
+)
