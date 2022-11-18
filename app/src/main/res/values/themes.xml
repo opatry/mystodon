@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.Mystodon" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Mystodon" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#DC3D62</item>
         <item name="colorPrimaryVariant">#98213D</item>
         <item name="colorOnPrimary">@android:color/white</item>

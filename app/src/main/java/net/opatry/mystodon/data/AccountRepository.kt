@@ -20,6 +20,10 @@
 
 package net.opatry.mystodon.data
 
+import net.opatry.mystodon.api.entity.Application
+import net.opatry.mystodon.api.entity.Token
+
 class AccountRepository {
-    var code: String? = null // FIXME quick & dirty
+    var app: Application? = null // FIXME quick & dirty
+    var token: Token? = null // FIXME quick & dirty
 }

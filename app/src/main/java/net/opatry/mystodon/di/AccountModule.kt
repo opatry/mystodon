@@ -25,10 +25,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.opatry.mystodon.data.AccountRepository
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 internal object AccountModule {
+    @Singleton
     @Provides
     fun provideAccountRepository(): AccountRepository {
         return AccountRepository()

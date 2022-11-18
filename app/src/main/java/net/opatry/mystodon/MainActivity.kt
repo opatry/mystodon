@@ -1,131 +1,68 @@
+// Copyright (c) 2022 Olivier Patry
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software
+// is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 package net.opatry.mystodon
 
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.lifecycle.lifecycleScope
-import coil.load
-import coil.transform.CircleCropTransformation
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import net.opatry.mystodon.api.MastodonApi
-import net.opatry.mystodon.api.mastodonAuthorizeUri
+import net.opatry.mystodon.auth.SignInActivity
 import net.opatry.mystodon.data.AccountRepository
-import net.opatry.mystodon.data.MastodonInstance
-import net.opatry.mystodon.databinding.MainActivityBinding
+import net.opatry.mystodon.home.HomeActivity
 import net.opatry.mystodon.onboarding.OnboardingActivity
 import net.opatry.mystodon.onboarding.OnboardingResult
 import javax.inject.Inject
 
-private const val appClientName = "mystodon"
-
-/**
- * see AndroidManifest `<intent-filter>` for [AuthCallbackActivity]
- */
-private const val redirectUri = "mystodon://auth-callback"
-private const val scope = "read write follow push"
-private const val website = "https://mystodon.opatry.net"
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: MainActivityBinding
-
     @Inject
     lateinit var accountRepository: AccountRepository
 
-    @Inject
-    lateinit var mastodonInstance: MastodonInstance
-
-    @Inject
-    lateinit var mastodonApi: MastodonApi
-
-    private val launchOnboarding = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val onboardingLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val intent = checkNotNull(result.data) { "No data provided by OnboardingActivity" }
             val onboardingResult = OnboardingResult(intent)
-            //launchSignIn.launch(SignInActivity.newIntent(this, onboardingResult.selectedInstanceUrl))
+            signInLauncher.launch(SignInActivity.newIntent(this, onboardingResult.selectedInstanceUrl))
+        }
+    }
+
+    private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            startActivity(HomeActivity.newIntent(this))
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // TODO extract nav state machine which depends on app state (SharedPreferences?)
 
-        if (true) {
-            launchOnboarding.launch(OnboardingActivity.newIntent(this))
-            return
-        }
-
-        if (accountRepository.code.isNullOrEmpty()) {
-            proceedWithAuthenticationFlow()
-        } else {
-            binding = MainActivityBinding.inflate(layoutInflater)
-            setContentView(binding.root)
-
-            // TODO better error management on app clientId/clientSecret state management
-            val app = checkNotNull(mastodonInstance.app) { "Application is not initialized as expected." }
-            val (clientId, clientSecret) = checkNotNull(app.clientId) { "Application does not have expected clientId." } to
-                    checkNotNull(app.clientSecret) { "Application does not have expected clientSecret." }
-            lifecycleScope.launch(Dispatchers.Main) {
-                val account = withContext(Dispatchers.IO) {
-                    // TODO do that only once + HTTP Client interceptor
-                    val token = mastodonApi.getToken(
-                        grantType = "authorization_code",
-                        clientId = clientId,
-                        clientSecret = clientSecret,
-                        redirectUri = redirectUri,
-                        scope = scope,
-                        code = accountRepository.code
-                    )
-
-                    mastodonApi.getAccount(token.authorization)
-                }
-
-                with(binding) {
-                    // TODO reuse account.displayName
-                    // TODO replace emojis key in string with spannable image pointing to URL (can be animated or not)
-                    profileUsername.text = getString(R.string.profile_username, account.username)
-                    profileFollowingCount.text = getString(R.string.profile_following_count, account.followingCount)
-                    profileFollowersCount.text = getString(R.string.profile_followers_count, account.followersCount)
-                    // TODO static avatar URL with animated if available
-                    profileAvatar.load(account.avatarStaticUrl) {
-                        crossfade(true)
-                        placeholder(R.drawable.ic_baseline_account_circle_24)
-                        transformations(CircleCropTransformation())
-                    }
-                }
+        when {
+            accountRepository.token == null ->
+                onboardingLauncher.launch(OnboardingActivity.newIntent(this))
+            else -> {
+                finish()
+                startActivity(HomeActivity.newIntent(this))
             }
-        }
-    }
-
-    private fun proceedWithAuthenticationFlow() {
-        lifecycleScope.launch(Dispatchers.Main) {
-            // FIXME needed at each launch? when is it revoked? never? store it in sharedprefs/db?
-            val app = withContext(Dispatchers.IO) {
-                mastodonApi.getApp(
-                    clientName = appClientName,
-                    redirectUris = redirectUri,
-                    scopes = scope,
-                    website = website
-                )
-            }
-
-            mastodonInstance.app = app
-            val clientId = checkNotNull(app.clientId) { "Application does not have expected clientId." }
-
-            CustomTabsIntent.Builder()
-                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-                .setShowTitle(true)
-                .build()
-                .launchUrl(
-                    this@MainActivity,
-                    mastodonAuthorizeUri(mastodonInstance.url, clientId, redirectUri, scope)
-                )
         }
     }
 }
