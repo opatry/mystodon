@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
+            finish()
             startActivity(HomeActivity.newIntent(this))
         }
     }
