@@ -25,6 +25,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,6 +64,9 @@ class OnboardingViewModelImpl
 @Inject constructor(
     private val joinMastodonApi: JoinMastodonApi,
 ) : ViewModel(), OnboardingViewModel {
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
     // TODO saveStateHandle
 
@@ -76,11 +80,11 @@ class OnboardingViewModelImpl
     override val state = MutableLiveData(OnboardingScreenState())
 
     init {
-        viewModelScope.launch(Dispatchers.Main) {
-            val instances = withContext(Dispatchers.IO) {
+        viewModelScope.launch(mainDispatcher) {
+            val instances = withContext(ioDispatcher) {
                 joinMastodonApi.servers()
             }
-            availableInstances = withContext(Dispatchers.Default) {
+            availableInstances = withContext(defaultDispatcher) {
                 instances.map {
                     OnboardingInstance(
                         domain = it.domain,
@@ -112,7 +116,7 @@ class OnboardingViewModelImpl
     override fun filterInstances(query: String?) {
         val cleanedQuery = query?.trim()?.removePrefix("@")?.trim() ?: ""
         filterQuery = cleanedQuery
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(mainDispatcher) {
             val uiInstances = if (cleanedQuery.isNotBlank()) {
                 availableInstances.filter {
                     it.domain.contains(cleanedQuery, true) || it.description.contains(cleanedQuery, true)
