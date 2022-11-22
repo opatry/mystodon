@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.opatry.mystodon.api.JoinMastodonApi
+import net.opatry.mystodon.api.JoinMastodonInstance
 import javax.inject.Inject
 
 data class OnboardingInstance(
@@ -81,8 +82,12 @@ class OnboardingViewModelImpl
 
     init {
         viewModelScope.launch(mainDispatcher) {
-            val instances = withContext(ioDispatcher) {
-                joinMastodonApi.servers()
+            val instances = try {
+                withContext(ioDispatcher) {
+                    joinMastodonApi.servers()
+                }
+            } catch (e: Exception) {
+                emptyList()
             }
             availableInstances = withContext(defaultDispatcher) {
                 instances.map {
