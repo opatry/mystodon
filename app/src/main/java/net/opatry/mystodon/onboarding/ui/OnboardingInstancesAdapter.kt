@@ -45,7 +45,7 @@ class OnboardingInstanceViewHolder(private val binding: OnboardingMastodonInstan
         }
 
         binding.onboardingMastodonInstanceCellTitle.text =
-            binding.root.resources.getString(R.string.onboarding_instance_name_title, instance.name)
+            binding.root.resources.getString(R.string.onboarding_instance_name_title, instance.domain)
         binding.onboardingMastodonInstanceCellDescription.text = instance.description
         binding.onboardingMastodonInstanceCellDescription.isVisible = instance.description.isNotBlank()
         binding.onboardingMastodonInstanceCellUserCount.text = instance.usersCount.toString()
@@ -98,7 +98,7 @@ class OnboardingInstancesAdapter(
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<OnboardingInstance>() {
             override fun areItemsTheSame(oldItem: OnboardingInstance, newItem: OnboardingInstance): Boolean {
-                return oldItem.id == newItem.id
+                return oldItem.domain == newItem.domain
             }
 
             override fun areContentsTheSame(oldItem: OnboardingInstance, newItem: OnboardingInstance): Boolean {

@@ -26,6 +26,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import net.opatry.mystodon.BuildConfig
 import net.opatry.mystodon.api.InstancesSocialApi
+import net.opatry.mystodon.api.JoinMastodonApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -34,6 +35,15 @@ import retrofit2.create
 @Module
 @InstallIn(ViewModelComponent::class)
 internal object OnboardingModule {
+
+    @Provides
+    fun provideJoinMastodonApi(): JoinMastodonApi {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.joinmastodon.org/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        return retrofit.create()
+    }
 
     @Provides
     fun provideInstancesSocialApi(): InstancesSocialApi {

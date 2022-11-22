@@ -28,22 +28,20 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.opatry.mystodon.api.InstancesSocialApi
+import net.opatry.mystodon.api.JoinMastodonApi
 import javax.inject.Inject
 
 data class OnboardingInstance(
-    val id: String,
-    val name: String,
+    val domain: String,
     val description: String,
     val thumbnailUrl: String?,
     val usersCount: Long,
     val languages: List<String>,
-    val isSelected: Boolean,
-    val isExactMatch: Boolean,
+    val isSelected: Boolean = false,
+    val isExactMatch: Boolean = false,
 ) {
-    // FIXME
     val url: String
-        get() = "https://$name"
+        get() = "https://$domain"
 }
 
 data class OnboardingScreenState(
@@ -63,14 +61,14 @@ interface OnboardingViewModel {
 @HiltViewModel
 class OnboardingViewModelImpl
 @Inject constructor(
-    private val instancesSocialApi: InstancesSocialApi,
+    private val joinMastodonApi: JoinMastodonApi,
 ) : ViewModel(), OnboardingViewModel {
 
     // TODO saveStateHandle
 
-    private var selectedInstanceId: String? = null
+    private var selectedInstanceName: String? = null
     override val selectedInstanceUrl: String?
-        get() = availableInstances.firstOrNull { it.id == selectedInstanceId }?.url
+        get() = state.value?.instances?.firstOrNull { it.domain == selectedInstanceName }?.url
 
     private var filterQuery: String? = null
 
@@ -79,32 +77,23 @@ class OnboardingViewModelImpl
 
     init {
         viewModelScope.launch(Dispatchers.Main) {
-            // TODO deal with paging incrementally
             val instances = withContext(Dispatchers.IO) {
-                // FIXME users or active_users?
-                instancesSocialApi.list(
-                    includeDead = false,
-                    includeDown = false,
-                    includeClosed = false,
-                    minUsers = 1,
-                    sortBy = "users",
-                    sortOrder = "desc"
-                )
+                joinMastodonApi.servers()
             }
             availableInstances = withContext(Dispatchers.Default) {
-                instances.instances.map {
+                instances.map {
                     OnboardingInstance(
-                        it.id,
-                        it.name,
-                        it.info?.shortDescription ?: "",
-                        it.thumbnailUrl,
-                        it.usersCount,
-                        it.info?.languages ?: emptyList(),
+                        domain = it.domain,
+                        description = it.description,
+                        thumbnailUrl = it.proxiedThumbnailUrl,
+                        usersCount = it.totalUsersCount,
+                        languages = it.languages,
                         isSelected = false,
                         isExactMatch = false,
                     )
                 }
             }
+
             val hasInstances = availableInstances.isNotEmpty()
             state.value = OnboardingScreenState(
                 instances = availableInstances,
@@ -116,7 +105,7 @@ class OnboardingViewModelImpl
     }
 
     override fun selectInstance(instance: OnboardingInstance?) {
-        selectedInstanceId = instance?.id
+        selectedInstanceName = instance?.domain
         filterInstances(filterQuery)
     }
 
@@ -125,35 +114,18 @@ class OnboardingViewModelImpl
         filterQuery = cleanedQuery
         viewModelScope.launch(Dispatchers.Main) {
             val uiInstances = if (cleanedQuery.isNotBlank()) {
-                // TODO caching the result for a given query could improve situation where user press back>back>back on a query
-                // TODO sort by + filter min user like for init list
-                val instances = withContext(Dispatchers.IO) {
-                    instancesSocialApi.search(cleanedQuery, inNameOnly = false)
+                availableInstances.filter {
+                    it.domain.contains(cleanedQuery, true) || it.description.contains(cleanedQuery, true)
                 }
                 // TODO if result is empty try exact match with MastodonApi
-                withContext(Dispatchers.Default) {
-                    instances.instances.map {
-                        OnboardingInstance(
-                            it.id,
-                            it.name,
-                            it.info?.shortDescription ?: "",
-                            it.thumbnailUrl,
-                            it.usersCount,
-                            it.info?.languages ?: emptyList(),
-                            isSelected = selectedInstanceId == it.id,
-                            isExactMatch = cleanedQuery == it.name,
-                        )
-                    }
-                }
             } else {
-                availableInstances.map {
-                    it.copy(
-                        isSelected = selectedInstanceId == it.id,
-                        isExactMatch = cleanedQuery == it.name,
-                    )
-                }
-            }
-            // FIXME requestedInstanceFound not in list but exists by checking MastodonApi
+                availableInstances
+            }.map {
+                it.copy(
+                    isSelected = selectedInstanceName == it.domain,
+                    isExactMatch = cleanedQuery == it.domain,
+                )
+            }.sortedBy { -it.usersCount }
             val hasInstances = uiInstances.isNotEmpty()
             state.value = OnboardingScreenState(
                 instances = uiInstances,
